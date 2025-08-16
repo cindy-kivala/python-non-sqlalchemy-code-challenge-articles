@@ -1,8 +1,28 @@
 class Article:
-    def __init__(self, title, author, magazine):
-        self.author = author
-        self.magazine = magazine
-        self.title = title
+    def __init__(self,author, magazine, title):
+        if not isinstance(author, Author):
+            raise ValueError("Author must be an Author instance")
+        if not isinstance(magazine, Magazine):
+            raise ValueError("Magazine must be a Magazine instance")
+        if not isinstance(title, str) or len(title) < 5 or len(title) > 50:
+            raise ValueError("Title must be a string between 5 and 50 characters")
+
+        self._author = author
+        self._magazine = magazine
+        self._title = title
+        magazine._articles.append(self)
+    
+    @property
+    def title(self):
+        return self._title
+    
+    @property
+    def author(self):
+        return self._author
+    
+    @property
+    def magazine(self):
+        return self._magazine
         
 class Author:
     def __init__(self, name):
@@ -85,3 +105,5 @@ class Magazine:
             #increment author count logic
             author_count[article.author] = author_count.get(article.author, 0) + 1
         return [author for author, count in author_count.items() if count > 2]
+    
+    #DO WE NEED A CLASS METHOD?
