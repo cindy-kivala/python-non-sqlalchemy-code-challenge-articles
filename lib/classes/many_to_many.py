@@ -1,5 +1,5 @@
 class Article:
-    def __init__(self, author, magazine, title):
+    def __init__(self, title, author, magazine):
         self.author = author
         self.magazine = magazine
         self.title = title
@@ -7,6 +7,18 @@ class Article:
 class Author:
     def __init__(self, name):
         self.name = name
+        if not isinstance(name, str) or len(name) == 0:
+            raise ValueError("Name must be a non-empty string")
+        self._name =name
+        self._articles = []
+
+    #prop to return author name
+    @property
+    def name(self):#getter
+        return self._name #fulfills the prop requirements
+    @name.setter
+    def name(self, value):
+        self._name = value #confirm if this is needed
 
     def articles(self):
         pass
@@ -15,7 +27,8 @@ class Author:
         pass
 
     def add_article(self, magazine, title):
-        pass
+        self.magazine = magazine
+        self.title = title
 
     def topic_areas(self):
         pass
