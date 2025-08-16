@@ -43,11 +43,7 @@ class Article:
         
 class Author:
     def __init__(self, name):
-        # self.name = name
-        # if not isinstance(name, str) or len(name) == 0:
-        #     raise ValueError("Name must be a non-empty string")
-        # self._name =name
-        # self._articles = []
+        
         self._validate_name(name)
         self._name = name
         self._articles = []
@@ -79,19 +75,19 @@ class Author:
 
 class Magazine:
     #class variable to keep track of all instances of magazine
-    _magazine = []
+    all = []
 
     def __init__(self, name, category):
         #conditionals
         if not isinstance(name, str) or len(name) < 2 or len(name) > 16:
-            raise ValueError("Magazine nme must be a string between 2 and 16 characters")
+            raise ValueError("Magazine name must be a string between 2 and 16 characters")
         if not isinstance(category, str) or len(category) == 0:
             raise ValueError("Category must be a non-empty string")
         
         self._name = name
         self._category = category
         self._articles = []
-        Magazine._magazine.append(self)
+        Magazine.all.append(self)
 
     @property
     def name(self):
@@ -114,14 +110,19 @@ class Magazine:
         if not isinstance(new_category, str) or not new_category.strip():
            raise ValueError("Category must be a non-empty string")
         self._category = new_category
+
+    #AGGREGATE METHODS=CLASS METHOD
+    @classmethod
+    def top_publisher(cls):
+        #Return the magazine with the most articles, or None if no articles exist
+        if not Article.all:
+            return None
+        #Anon lambda function - find the mag with the mex no. of articles
+        return max(cls.all, key=lambda mag: len(mag.articles()))
     
     def articles(self):
         return [article for article in Article.all if article.magazine == self]
 
-    # def contributors(self):
-    #     if not hasattr(self, '_contributors'):
-    #         self._contributors = [] #lets initialize here
-    #     return self._contributors
     def contributors(self):
         return list(set(article.author for article in self._articles))
 
@@ -130,15 +131,9 @@ class Magazine:
             return None
         return [article.title for article in self._articles]
 
-    # def contributing_authors(self):
-    #     author_count = {} #unique list for aunthoors in type author
-    #     for article in self._articles:
-    #         #increment author count logic
-    #         author_count[article.author] = author_count.get(article.author, 0) + 1
-    #     return [author for author, count in author_count.items() if count > 2]
 
     def contributing_authors(self):
-        from collections import Counter
+        from collections import Counter #is it a priblem to import inline?
     # get all articles for this magazine
         articles = [article for article in Article.all if article.magazine == self]
     # count how many articles each author has written for this magazine
