@@ -6,19 +6,27 @@ class Article:
         
 class Author:
     def __init__(self, name):
-        self.name = name
-        if not isinstance(name, str) or len(name) == 0:
-            raise ValueError("Name must be a non-empty string")
-        self._name =name
+        # self.name = name
+        # if not isinstance(name, str) or len(name) == 0:
+        #     raise ValueError("Name must be a non-empty string")
+        # self._name =name
+        # self._articles = []
+        self._validate_name(name)
+        self._name = name
         self._articles = []
+    
+    @staticmethod
+    def _validate_name(name):
+        if not isinstance(name, str) or not name:
+            raise ValueError("Name must be a non-empty string")
 
     #prop to return author name
     @property
     def name(self):#getter
         return self._name #fulfills the prop requirements
-    @name.setter
-    def name(self, value):
-        self._name = value #confirm if this is needed
+    # @name.setter
+    # def name(self, value):
+    #     self._name = value #confirm if this is needed
 
     def articles(self):
         return self._articles #scope???
