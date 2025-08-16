@@ -60,14 +60,28 @@ class Magazine:
         self._articles = []
         Magazine._magazine.append(self)
 
+    @property
+    def name(self):
+        return self._name
+    
+    @property
+    def category(self):
+        return self._category
+    
     def articles(self):
-        pass
+        return self._articles
 
     def contributors(self):
-        pass
+        return self._contributors #CONFIRM HOW TO RESOLEV
 
     def article_titles(self):
-        pass
+        if not self._articles:
+            return None
+        return [article.title for article in self._articles]
 
     def contributing_authors(self):
-        pass
+        author_count = {} #unique list for aunthoors in type author
+        for article in self._articles:
+            #increment author count logic
+            author_count[article.author] = author_count.get(article.author, 0) + 1
+        return [author for author, count in author_count.items() if count > 2]
