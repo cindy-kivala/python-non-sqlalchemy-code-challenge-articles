@@ -21,17 +21,20 @@ class Author:
         self._name = value #confirm if this is needed
 
     def articles(self):
-        pass
+        return self._articles #scope???
 
     def magazines(self):
-        pass
+        return list(set(article.magazine for article in self._articles)) #comprehension
 
     def add_article(self, magazine, title):
-        self.magazine = magazine
-        self.title = title
+        article = Article(self, magazine, title)
+        self._articles.append(article)
+        return article
 
     def topic_areas(self):
-        pass
+        if not self._articles:
+            return None
+        return list(set(article.magazine.category for article in self._articles))
 
 class Magazine:
     def __init__(self, name, category):
