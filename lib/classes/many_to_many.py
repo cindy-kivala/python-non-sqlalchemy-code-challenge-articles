@@ -1,4 +1,6 @@
 class Article:
+    all = [] # a cls variable to hold all the instances of Article
+
     def __init__(self,author, magazine, title):
         if not isinstance(author, Author):
             raise ValueError("Author must be an Author instance")
@@ -10,6 +12,9 @@ class Article:
         self._author = author
         self._magazine = magazine
         self._title = title
+      
+        Article.all.append(self)  # Append the instance to the class-level list
+
         magazine._articles.append(self)
     
     @property
@@ -20,9 +25,21 @@ class Article:
     def author(self):
         return self._author
     
+    @author.setter
+    def author(self, new_author):
+        if not isinstance(new_author, Author):
+            raise ValueError("Author must be an Author instance")
+        self._author = new_author #allow author to be changed
+    
     @property
     def magazine(self):
         return self._magazine
+    #setter prop
+    @magazine.setter
+    def magazine(self, new_magazine):
+        if not isinstance(new_magazine, Magazine):
+            raise ValueError("Magazine must be a Magazine instance")
+        self._magazine = new_magazine #allows magazine to be changed
         
 class Author:
     def __init__(self, name):
@@ -44,25 +61,21 @@ class Author:
     @property
     def name(self):#getter
         return self._name #fulfills the prop requirements
-    # @name.setter
-    # def name(self, value):
-    #     self._name = value #confirm if this is needed
-
+   
     def articles(self):
-        return self._articles #scope???
+        return [article for article in Article.all if article.author == self] #scope???
 
     def magazines(self):
-        return list(set(article.magazine for article in self._articles)) #comprehension
+        return list(set(article.magazine for article in self.articles())) #comprehension
 
     def add_article(self, magazine, title):
-        article = Article(self, magazine, title)
-        self._articles.append(article)
-        return article
+         return Article(self, magazine, title)
 
     def topic_areas(self):
-        if not self._articles:
+        articles = self.articles()
+        if not articles:
             return None
-        return list(set(article.magazine.category for article in self._articles))
+        return list(set(article.magazine.category for article in articles))
 
 class Magazine:
     #class variable to keep track of all instances of magazine
@@ -84,26 +97,67 @@ class Magazine:
     def name(self):
         return self._name
     
+    @name.setter
+    def name(self, new_name):
+        if not isinstance(new_name, str) or len(new_name) < 2 or len(new_name) > 16:
+           raise ValueError("Magazine name must be a string between 2 and 16 characters")
+        self._name = new_name
+    
     @property
     def category(self):
         return self._category
     
-    def articles(self):
-        return self._articles
+    #setter
 
+    @category.setter
+    def category(self, new_category):
+        if not isinstance(new_category, str) or not new_category.strip():
+           raise ValueError("Category must be a non-empty string")
+        self._category = new_category
+    
+    def articles(self):
+        return [article for article in Article.all if article.magazine == self]
+
+    # def contributors(self):
+    #     if not hasattr(self, '_contributors'):
+    #         self._contributors = [] #lets initialize here
+    #     return self._contributors
     def contributors(self):
-        return self._contributors #CONFIRM HOW TO RESOLEV
+        return list(set(article.author for article in self._articles))
 
     def article_titles(self):
         if not self._articles:
             return None
         return [article.title for article in self._articles]
 
+    # def contributing_authors(self):
+    #     author_count = {} #unique list for aunthoors in type author
+    #     for article in self._articles:
+    #         #increment author count logic
+    #         author_count[article.author] = author_count.get(article.author, 0) + 1
+    #     return [author for author, count in author_count.items() if count > 2]
+
     def contributing_authors(self):
-        author_count = {} #unique list for aunthoors in type author
-        for article in self._articles:
-            #increment author count logic
-            author_count[article.author] = author_count.get(article.author, 0) + 1
-        return [author for author, count in author_count.items() if count > 2]
+        from collections import Counter
+    # get all articles for this magazine
+        articles = [article for article in Article.all if article.magazine == self]
+    # count how many articles each author has written for this magazine
+        author_counts = Counter(article.author for article in articles)
+    # filter authors who have written more than 2 articles
+        result = [author for author, count in author_counts.items() if count > 2]
+    # if none, return None
+        return result if result else None
+
     
     #DO WE NEED A CLASS METHOD?
+
+    # Create Author and Magazine instances
+author = Author("Carry Bradshaw")
+magazine = Magazine("Vogue", "Fashion")
+
+# Add articles through the author
+author.add_article(magazine, "How to wear a tutu with style")
+author.add_article(magazine, "Dating life in NYC")
+
+# Verify the articles
+print(len(author.articles()))  # Outputs: 2
