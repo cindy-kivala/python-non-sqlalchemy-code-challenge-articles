@@ -37,9 +37,20 @@ class Author:
         return list(set(article.magazine.category for article in self._articles))
 
 class Magazine:
+    #class variable to keep track of all instances of magazine
+    _magazine = []
+
     def __init__(self, name, category):
-        self.name = name
-        self.category = category
+        #conditionals
+        if not isinstance(name, str) or len(name) < 2 or len(name) > 16:
+            raise ValueError("Magazine nme must be a string between 2 and 16 characters")
+        if not isinstance(category, str) or len(category) == 0:
+            raise ValueError("Category must be a non-empty string")
+        
+        self._name = name
+        self._category = category
+        self._articles = []
+        Magazine._magazine.append(self)
 
     def articles(self):
         pass
